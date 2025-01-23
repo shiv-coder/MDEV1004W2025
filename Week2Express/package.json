@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start":"nodemon index.js"
+    "start": "nodemon index.js"
   },
   "repository": {
     "type": "git",
@@ -19,6 +19,7 @@
   "homepage": "https://github.com/shiv-coder/MDEV1004W2025#readme",
   "dependencies": {
     "express": "^4.21.2",
+    "mongoose": "^8.9.5",
     "nodemon": "^3.1.9"
   }
 }
