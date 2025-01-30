@@ -2,6 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const movieRoutes = require('./src/routes/movieRoutes');
+require('dotenv').config();
 
 //Intialize the app
 const app = express();
@@ -15,7 +16,7 @@ app.use('/movies',movieRoutes);
 //     res.send("Welcome to the 4th week of express");
 // })
 //MongoB connection
-const MONGO_URI = process.env.MONGO_URI;
+const MONGO_URI = "mongodb+srv://user3:user3@cluster0.lsiqq.mongodb.net/";
 mongoose.connect(MONGO_URI)
 .then(()=>console.log("Connected to MongoDB"))
 .catch((err)=>console.error("MongoDb connection error",err));
