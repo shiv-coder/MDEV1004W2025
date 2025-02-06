@@ -8,11 +8,18 @@ exports.importMovies = async(req,res)=>{
     try{
         const filePath = path.join(__dirname,'../../movies.json');
         const moviesData = JSON.parse(fs.readFileSync(filePath,"utf-8"));
-        await Movie.insertMany(moviesData);
-        res.status(201).json({message:'Movies imported succesfully'});
+        const count = await Movie.countDocuments();
+        if(count === 0){
+            await Movie.insertMany(moviesData);
+            res.status(201).json({message:'Movies imported succesfully'});
+        } else{
+            res.status(200).send('Data already exists,skipping import');
+        }
+        
     }
-    catch(error){
-        res.status(500).json({error:error.message});
+    catch(e){
+        console.error('Error importing the data',e);
+        res.status(500).send('Error in importing the movies');
     }
 }
 
@@ -24,7 +31,63 @@ exports.getAllMovies = async(req,res)=>{
         res.status(200).json(movies);
 
     }
-    catch(error){
-        res.status(500).json('Error retrieving Movies');
+    catch(e){
+        console.error(e);
+        res.status(500).send('Error retrieving Movies');
+    }
+}
+
+exports.getMovieById = async(req,res)=>{
+    try{
+        const movies = await Movie.findById(req.params.id);
+        if(!movies){
+            return res.status(400).send('Movie is not found');
+        }
+        res.status(200).json(movies);
+
+    }
+    catch(e){
+        console.error(e);
+        res.status(500).send('Error retrieving Movies');
+    }
+}
+
+exports.createMovie = async(req,res)=>{
+    try{
+        const newMovie = new Movie(req.body);
+        await newMovie.save();
+        res.status(201).json(newMovie);
+    }
+    catch(e){
+        console.error(e);
+        res.status(500).send('Error creating Movies');
+    }
+}
+
+exports.updateMovie = async(req,res)=>{
+    try{
+        const updatedMovie = await Movie.findByIdAndUpdate(req.params.id,req.body,{new:true});
+        if(!updatedMovie){
+            return res.status(400).send('Movie is not updated');
+        }
+        res.status(201).json(updatedMovie);
+    }
+    catch(e){
+        console.error(e);
+        res.status(500).send('Error updating the Movies');
+    }
+}
+
+exports.deleteMovie = async(req,res)=>{
+    try{
+        const deletedMovie = await Movie.findByIdAndDelete(req.params.id);
+        if(!deletedMovie){
+            return res.status(400).send('Movie is not found');
+        }
+        res.status(201).json(deletedMovie);
+    }
+    catch(e){
+        console.error(e);
+        res.status(500).send('Error deleting the Movies');
     }
 }
