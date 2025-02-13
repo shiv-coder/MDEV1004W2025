@@ -64,3 +64,9 @@ exports.loginUser = async(req,res)=>{
         res.status(500).json({message:'Error loggin in user'});
     }
 }
+
+/*studentname:
+student id:
+*/
+
+//logout function

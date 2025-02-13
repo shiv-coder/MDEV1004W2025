@@ -29,7 +29,7 @@ passport.use(
     )
 );
 
-//Serialize and deseialize the code
+//Serialize and deserialize the code
 passport.serializeUser((user,done)=>done(null,user.id));
 passport.deserializeUser((id,done)=>{User.findById(id)
     .then(user=>done(null,user))
