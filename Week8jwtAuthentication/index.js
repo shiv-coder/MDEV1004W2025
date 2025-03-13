@@ -2,7 +2,10 @@ const routes = require('./routes/routes');
 const express = require('express');
 const app = express();
 const verifyToken = require('./middleware/auth');
+const db = require('./database/db');
+
 require('dotenv').config();
+db.connect();
 
 app.use(express.json());
 
