@@ -1,7 +1,7 @@
 require("dotenv").config();
 const express = require('express');
 const mongoose = require('mongoose');
-const { getRepositories} = require("./controllers/repositoryContoller");
+const { addRepository,getRepositories} = require("./controllers/repositoryContoller");
 
 const app= express();
 const PORT = process.env.PORT || 3000;
@@ -16,6 +16,7 @@ mongoose.connect(process.env.MONGO_URI)
 
 //Define routes
 app.get("/fetch-repositories",getRepositories);
+app.post("/add-repository", addRepository);
 
 //start the server
 

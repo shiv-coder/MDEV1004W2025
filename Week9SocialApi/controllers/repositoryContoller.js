@@ -41,4 +41,39 @@ const getRepositories =async(req,res)=>{
     }
 };
 
-module.exports = { getRepositories};
+const addRepository = async (req, res) => {
+    try {
+        const { name, full_name, description, language, url, created_at, updated_at } = req.body;
+
+        // Check if required fields are provided
+        if (!name || !full_name || !url) {
+            return res.status(400).json({ error: "Name, full_name, and URL are required fields" });
+        }
+
+        // Create new repository document
+        const newRepo = new Repository({
+            name,
+            full_name,
+            description,
+            language,
+            url,
+            created_at: created_at ? new Date(created_at) : new Date(),
+            updated_at: updated_at ? new Date(updated_at) : new Date(),
+        });
+
+     
+        const savedRepo = await newRepo.save();
+
+        res.status(201).json({
+            message: "Repository added successfully",
+            data: savedRepo,
+        });
+
+    } catch (error) {
+        console.error("Error adding repository:", error);
+        res.status(500).json({ error: "Failed to add repository" });
+    }
+};
+
+
+module.exports = { getRepositories, addRepository};
