@@ -11,4 +11,4 @@ const repositorySchema = mongoose.Schema({
 });
 
 const Repository = mongoose.model("Repository",repositorySchema);
-module.expoerts = Repository;
+module.exports = Repository;

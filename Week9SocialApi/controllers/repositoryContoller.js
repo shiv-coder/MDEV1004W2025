@@ -1,4 +1,5 @@
 const axios = require('axios');
+const mongoose = require('mongoose');
 const Repository = require('../model/repoModel');
 
 const getRepositories =async(req,res)=>{
@@ -7,7 +8,7 @@ const getRepositories =async(req,res)=>{
             const url = `https://api.github.com/users/${username}/repos`;
             const response = await axios.get(url,{
                 headers: {
-                    Authororization:`token ${process.env.GITHUB_TOKEN}`;
+                    Authororization:`token ${process.env.GITHUB_TOKEN}`
                 }
             });
             const repoData = response.data;
@@ -16,8 +17,8 @@ const getRepositories =async(req,res)=>{
 
             const repositories = repoData.map((repo)=>({
                     name: repo.name,
-                    full_name:repo.full_name;
-                    description = repo.description;
+                    full_name:repo.full_name,
+                    description : repo.description,
                     language :repo.language,
                     url:repo.html_url,
                     created_at :new Date(repo.created_at),
