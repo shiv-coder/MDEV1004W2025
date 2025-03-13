@@ -75,5 +75,62 @@ const addRepository = async (req, res) => {
     }
 };
 
+const createGitHubRepository = async (req, res) => {
+    try {
+        const { name, description, privateRepo } = req.body; 
 
-module.exports = { getRepositories, addRepository};
+        if (!name) {
+            return res.status(400).json({ error: "Repository name is required" });
+        }
+
+        const githubToken = process.env.GITHUB_TOKEN; // GitHub Personal Access Token
+        if (!githubToken) {
+            return res.status(500).json({ error: "GitHub token not configured in environment variables" });
+        }
+        const username = req.query.username ??"shiv-coder";
+        // GitHub API endpoint to create a new repository
+        const url = `https://api.github.com/user/repos`;
+
+        
+        const response = await axios.post(
+            url,
+            {
+                name: name,
+                description: description || "",
+                private: privateRepo || false, // Default is public
+            },
+            {
+                headers: {
+                    Authorization: `token ${process.env.GITHUB_TOKEN}`,
+                    Accept: "application/vnd.github.v3+json",
+                },
+            }
+        );
+
+        const repoData = response.data; 
+
+        // Save the repository details to MongoDB
+        const newRepo = new Repository({
+            name: repoData.name,
+            full_name: repoData.full_name,
+            description: repoData.description,
+            language: repoData.language,
+            url: repoData.html_url,
+            created_at: new Date(repoData.created_at),
+            updated_at: new Date(repoData.updated_at),
+        });
+
+        const savedRepo = await newRepo.save();
+
+        res.status(201).json({
+            message: "Repository created on GitHub and saved in MongoDB",
+            data: savedRepo,
+        });
+
+    } catch (error) {
+        console.error("Error creating repository on GitHub:", error.response?.data || error);
+        res.status(500).json({ error: "Failed to create repository on GitHub" });
+    }
+};
+
+module.exports = { getRepositories, addRepository,createGitHubRepository};
