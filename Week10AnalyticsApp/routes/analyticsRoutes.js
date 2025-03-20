@@ -37,28 +37,14 @@ router.get('/hello', trackAnalytics, async (req, res) => {
     // Google Analytics event
     await sendToGoogleAnalytics('page_view', '/hello');
 
-    // MongoDB analytics tracking
-    await Analytics.updateOne(
-        { endpoint: '/hello' },
-        { $inc: { hits: 1 }, $push: { timestamps: new Date() } },
-        { upsert: true }
-    );
-
-    res.send('This is Analytics App');
+     res.send('This is Analytics App');
 });
 
 router.get('/about', trackAnalytics, async (req, res) => {
     // Google Analytics event
     await sendToGoogleAnalytics('page_view', '/about');
 
-    // MongoDB analytics tracking
-    await Analytics.updateOne(
-        { endpoint: '/about' },
-        { $inc: { hits: 1 }, $push: { timestamps: new Date() } },
-        { upsert: true }
-    );
-
-    res.send('About Us');
+     res.send('About Us');
 });
 
 // Route to view analytics data from MongoDB
