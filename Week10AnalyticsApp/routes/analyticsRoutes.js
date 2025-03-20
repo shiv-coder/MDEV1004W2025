@@ -1,50 +1,49 @@
 const express = require('express');
-const axios = require('axios');  
+const axios = require('axios');
 const router = express.Router();
 const { trackAnalytics, getAnalytics } = require('../controllers/analyticsController');
-const Analytics = require('../model/analyticsModel');
+
+// Google Analytics 4 Measurement ID & API Secret
+const measurement_id = 'G-3N37LZHLB8'; // Replace with your GA4 Measurement ID
+const api_secret = 'b8pgN9-cQ1SP5XjARSD98Q'; // Replace with your API Secret
 
 // Google Analytics Measurement Protocol Endpoint
-const GA_MEASUREMENT_URL = 'https://www.google-analytics.com/collect';
+const GA_MEASUREMENT_URL = `https://www.google-analytics.com/mp/collect?measurement_id=${measurement_id}&api_secret=${api_secret}`;
 
-// Your Google Analytics Tracking ID (for Universal Analytics) or Measurement ID (for GA4)
-const GA_TRACKING_ID = 'G-3N37LZHLB8'; // Replace with your actual Tracking ID or Measurement ID
-
-// Send event to Google Analytics via Measurement Protocol
-const sendToGoogleAnalytics = async (eventCategory, eventAction) => {
+// Send event to Google Analytics via GA4 Measurement Protocol
+const sendToGoogleAnalytics = async (eventName, params = {}) => {
     try {
         const payload = {
-            v: '1',  // Protocol version
-            tid: GA_TRACKING_ID,  // Google Analytics Tracking ID or Measurement ID
-            cid: '555',  // Client ID (a unique identifier for each user, can be dynamic)
-            t: 'event',  // Event type
-            ec: eventCategory,  // Event category
-            ea: eventAction,  // Event action
-            el: 'button_click',  // Event label (optional)
-            ev: '300',  // Event value (optional)
+            client_id: "555.1234567890", 
+            events: [
+                {
+                    name: eventName,
+                    params: {
+                        session_id: "123", // Replace with actual session tracking if needed
+                        engagement_time_msec: 100,
+                        ...params, 
+                    }
+                }
+            ]
         };
 
-        // Send the event data to Google Analytics
-        await axios.post(GA_MEASUREMENT_URL, null, { params: payload });
-        console.log('Event sent to Google Analytics');
+        // Send event data to GA4
+        await axios.post(GA_MEASUREMENT_URL, payload);
+        console.log(`Event '${eventName}' sent to Google Analytics`);
     } catch (error) {
-        console.error('Error sending event to Google Analytics:', error);
+        console.error('Error sending event to Google Analytics:', error.response ? error.response.data : error.message);
     }
 };
 
 // Track analytics for page visits and log Google Analytics events
 router.get('/hello', trackAnalytics, async (req, res) => {
-    // Google Analytics event
-    await sendToGoogleAnalytics('page_view', '/hello');
-
-     res.send('This is Analytics App');
+    await sendToGoogleAnalytics('page_view', { page_location: '/hello' });
+    res.send('This is Analytics App');
 });
 
 router.get('/about', trackAnalytics, async (req, res) => {
-    // Google Analytics event
-    await sendToGoogleAnalytics('page_view', '/about');
-
-     res.send('About Us');
+    await sendToGoogleAnalytics('page_view', { page_location: '/about' });
+    res.send('About Us');
 });
 
 // Route to view analytics data from MongoDB
