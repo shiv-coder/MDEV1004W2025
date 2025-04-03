@@ -1,0 +1,24 @@
+<script src="https://www.paypal.com/sdk/js?client-id=ATOjD79vwqjtu6g_BLHDx7zj2ds_HaDPS_H5lsxHWWOEwKD-9i6bT1RMrwY9UnCqfNtYzgC5X-MZWcPM&currency=CAD"></script>
+
+<div id="paypal-button-container"></div>
+
+<script>
+  paypal.Buttons({
+    createOrder: async () => {
+      const res = await fetch('/api/orders', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' }
+      });
+      const data = await res.json();
+      return data.id; // PayPal uses this ID
+    },
+    onApprove: async (data, actions) => {
+      const res = await fetch(`/api/orders/${data.orderID}/capture`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' }
+      });
+      const details = await res.json();
+      alert('Transaction completed by ' + details.payer.name.given_name);
+    }
+  }).render('#paypal-button-container');
+</script>
